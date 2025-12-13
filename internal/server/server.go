@@ -12,7 +12,7 @@ import (
 func New(cfg *config.Config) *http.Server {
 	gin.SetMode(cfg.GinMode)
 	router := gin.Default()
-	registerRoutes(router, cfg)
+	registerRoutes(router)
 
 	return &http.Server{
 		Addr:    ":" + cfg.AppPort,
@@ -20,6 +20,6 @@ func New(cfg *config.Config) *http.Server {
 	}
 }
 
-func registerRoutes(router *gin.Engine, cfg *config.Config) {
-	healthHTTP.RegisterRoutes(router, cfg)
+func registerRoutes(router *gin.Engine) {
+	healthHTTP.RegisterRoutes(router)
 }

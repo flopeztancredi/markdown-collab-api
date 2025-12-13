@@ -1,6 +1,7 @@
 # Variables
-APP_NAME := markdown-collab
+APP_NAME := markdown-collab-api
 MAIN_PATH := ./cmd/api
+DATABASE_URL ?= postgres://postgres:postgres@localhost:5432/markdown?sslmode=disable
 
 ## help: Show this help message
 help:
@@ -33,6 +34,18 @@ clean:
 ## tidy: Tidy dependencies
 tidy:
 	go mod tidy
+
+## migrate-up: Run database migrations
+migrate-up:
+	migrate -path migrations -database "$(DATABASE_URL)" up
+
+## migrate-down: Rollback database migrations
+migrate-down:
+	migrate -path migrations -database "$(DATABASE_URL)" down
+
+## migrate-create: Create a new migration (usage: make migrate-create name=migration_name)
+migrate-create:
+	migrate create -ext sql -dir migrations -seq $(name)
 
 ## docker-build: Build Docker image
 docker-build:

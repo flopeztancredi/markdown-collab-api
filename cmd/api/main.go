@@ -11,15 +11,25 @@ import (
 	"time"
 
 	"github.com/flopeztancredi/markdown-collab-api/internal/config"
+	"github.com/flopeztancredi/markdown-collab-api/internal/database"
 	"github.com/flopeztancredi/markdown-collab-api/internal/server"
 )
 
 func main() {
 	cfg := config.Load()
+
+	ctx := context.Background()
+	db, err := database.Connect(ctx, cfg.DatabaseURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer db.Close()
+	log.Println("Connected to database")
+
 	srv := server.New(cfg)
 
 	go func() {
-		log.Printf("Starting %s v%s on port %s", cfg.AppName, cfg.AppVersion, cfg.AppPort)
+		log.Printf("Starting %s on port %s", cfg.AppName, cfg.AppPort)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Failed to start server: %v", err)
 		}

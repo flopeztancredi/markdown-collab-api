@@ -3,18 +3,41 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ${APP_NAME:-markdown-collab}
+    container_name: markdown-api
     ports:
-      - "${APP_PORT:-8080}:8080"
+      - "${APP_PORT:-8080}:${APP_PORT:-8080}"
     environment:
-      - APP_PORT=8080
-      - APP_NAME=${APP_NAME:-markdown-collab}
-      - APP_VERSION=1.0.0
+      - APP_PORT=${APP_PORT:-8080}
+      - APP_NAME=${APP_NAME:-markdown-collab-api}
       - GIN_MODE=${GIN_MODE:-release}
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/markdown?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${APP_PORT:-8080}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
+
+  db:
+    image: postgres:16-alpine
+    container_name: markdown-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: markdown
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
