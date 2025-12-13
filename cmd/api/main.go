@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/flopeztancredi/markdown-collab/internal/config"
-	"github.com/flopeztancredi/markdown-collab/internal/server"
+	"github.com/flopeztancredi/markdown-collab-api/internal/config"
+	"github.com/flopeztancredi/markdown-collab-api/internal/server"
 )
 
 func main() {

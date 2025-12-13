@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/flopeztancredi/markdown-collab/internal/health/application"
+	"github.com/flopeztancredi/markdown-collab-api/internal/health/application"
 )
 
 type Handler struct {

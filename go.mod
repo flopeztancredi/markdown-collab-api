@@ -1,4 +1,4 @@
-module github.com/flopeztancredi/markdown-collab
+module github.com/flopeztancredi/markdown-collab-api
 
 go 1.23
 

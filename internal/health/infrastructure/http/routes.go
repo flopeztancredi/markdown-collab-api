@@ -3,8 +3,8 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/flopeztancredi/markdown-collab/internal/config"
-	"github.com/flopeztancredi/markdown-collab/internal/health/application"
+	"github.com/flopeztancredi/markdown-collab-api/internal/config"
+	"github.com/flopeztancredi/markdown-collab-api/internal/health/application"
 )
 
 func RegisterRoutes(router *gin.Engine, cfg *config.Config) {

@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/flopeztancredi/markdown-collab/internal/config"
-	healthHTTP "github.com/flopeztancredi/markdown-collab/internal/health/infrastructure/http"
+	"github.com/flopeztancredi/markdown-collab-api/internal/config"
+	healthHTTP "github.com/flopeztancredi/markdown-collab-api/internal/health/infrastructure/http"
 )
 
 func New(cfg *config.Config) *http.Server {

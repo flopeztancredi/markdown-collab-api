@@ -1,6 +1,6 @@
 package application
 
-import "github.com/flopeztancredi/markdown-collab/internal/health/domain"
+import "github.com/flopeztancredi/markdown-collab-api/internal/health/domain"
 
 type Service struct {
 	serviceName    string
