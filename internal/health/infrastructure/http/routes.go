@@ -1,14 +1,8 @@
 package http
 
-import (
-	"github.com/gin-gonic/gin"
+import "github.com/gin-gonic/gin"
 
-	"github.com/flopeztancredi/markdown-collab-api/internal/config"
-	"github.com/flopeztancredi/markdown-collab-api/internal/health/application"
-)
-
-func RegisterRoutes(router *gin.Engine, cfg *config.Config) {
-	service := application.NewService(cfg.AppName, cfg.AppVersion)
-	handler := NewHandler(service)
+func RegisterRoutes(router *gin.Engine) {
+	handler := NewHandler()
 	router.GET("/health", handler.Check)
 }

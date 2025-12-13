@@ -12,8 +12,8 @@ type Handler struct {
 	service *application.Service
 }
 
-func NewHandler(service *application.Service) *Handler {
-	return &Handler{service: service}
+func NewHandler() *Handler {
+	return &Handler{service: application.NewService()}
 }
 
 func (h *Handler) Check(c *gin.Context) {

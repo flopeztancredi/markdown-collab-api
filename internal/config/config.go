@@ -3,18 +3,18 @@ package config
 import "os"
 
 type Config struct {
-	AppName    string
-	AppPort    string
-	AppVersion string
-	GinMode    string
+	AppName     string
+	AppPort     string
+	GinMode     string
+	DatabaseURL string
 }
 
 func Load() *Config {
 	return &Config{
-		AppName:    getEnv("APP_NAME", "markdown-collab"),
-		AppPort:    getEnv("APP_PORT", "8080"),
-		AppVersion: getEnv("APP_VERSION", "1.0.0"),
-		GinMode:    getEnv("GIN_MODE", "release"),
+		AppName:     getEnv("APP_NAME", "markdown-collab-api"),
+		AppPort:     getEnv("APP_PORT", "8080"),
+		GinMode:     getEnv("GIN_MODE", "debug"),
+		DatabaseURL: getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/markdown?sslmode=disable"),
 	}
 }
 

@@ -19,7 +19,7 @@ func main() {
 	srv := server.New(cfg)
 
 	go func() {
-		log.Printf("Starting %s v%s on port %s", cfg.AppName, cfg.AppVersion, cfg.AppPort)
+		log.Printf("Starting %s on port %s", cfg.AppName, cfg.AppPort)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Failed to start server: %v", err)
 		}
