@@ -1,4 +1,4 @@
-# Markdown Collab
+# Markdown Collab API
 
 A collaborative markdown editing tool built with Go and Gin framework, following Onion Architecture principles.
 
@@ -8,12 +8,16 @@ A collaborative markdown editing tool built with Go and Gin framework, following
 
 - Go 1.23
 - Docker & Docker Compose
+- [golang-migrate](https://github.com/golang-migrate/migrate)
 
 ### Running with Docker
 
 ```bash
 # Start the application
 make docker-up
+
+# Run database migrations
+make migrate-up
 
 # View logs
 make docker-logs
@@ -25,10 +29,7 @@ make docker-down
 ### Running Locally
 
 ```bash
-# Install dependencies
 go mod tidy
-
-# Run the application
 make run
 ```
 
@@ -46,11 +47,27 @@ Copy `.env.example` to `.env` and configure:
 cp .env.example .env
 ```
 
-| Variable   | Description           | Default   |
-|------------|-----------------------|-----------|
-| APP_NAME   | Application name      | gin-api   |
-| APP_PORT   | Server port           | 8080      |
-| GIN_MODE   | Gin mode (debug/release) | release |
+| Variable     | Description              | Default                                                              |
+|--------------|--------------------------|----------------------------------------------------------------------|
+| APP_NAME     | Application name         | markdown-collab-api                                                  |
+| APP_PORT     | Server port              | 8080                                                                 |
+| GIN_MODE     | Gin mode (debug/release) | release                                                              |
+| DATABASE_URL | PostgreSQL connection    | postgres://postgres:postgres@localhost:5432/markdown?sslmode=disable |
+
+## Database
+
+### Migrations
+
+```bash
+# Apply migrations
+make migrate-up
+
+# Rollback migrations
+make migrate-down
+
+# Create new migration
+make migrate-create name=migration_name
+```
 
 ## Testing
 
