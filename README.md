@@ -35,9 +35,11 @@ make run
 
 ## API Endpoints
 
-| Method | Endpoint  | Description         |
-|--------|-----------|---------------------|
-| GET    | `/health` | Health check status |
+| Method | Endpoint          | Description            |
+|--------|-------------------|------------------------|
+| GET    | `/health`         | Health check status    |
+| POST   | `/documents`      | Create a new document  |
+| GET    | `/documents/:id`  | Get document by ID     |
 
 ## Configuration
 

@@ -26,7 +26,7 @@ func main() {
 	defer db.Close()
 	log.Println("Connected to database")
 
-	srv := server.New(cfg)
+	srv := server.New(cfg, db)
 
 	go func() {
 		log.Printf("Starting %s on port %s", cfg.AppName, cfg.AppPort)
