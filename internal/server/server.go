@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -25,10 +26,49 @@ func New(cfg *config.Config, db *pgxpool.Pool) *http.Server {
 
 	healthHTTP.RegisterRoutes(router)
 	documentHTTP.RegisterRoutes(router, documentService)
-	documentWS.RegisterRoutes(router, documentHub, documentService)
+	documentWS.RegisterRoutes(router, documentHub, documentService, allowedOriginChecker(cfg.AllowedOrigins))
 
 	return &http.Server{
 		Addr:    ":" + cfg.AppPort,
 		Handler: router,
+	}
+}
+
+func allowedOriginChecker(origins []string) func(r *http.Request) bool {
+	allowed := make(map[string]struct{}, len(origins))
+	for _, o := range origins {
+		allowed[o] = struct{}{}
+	}
+
+	return func(r *http.Request) bool {
+		origin := r.Header.Get("Origin")
+		if origin == "" {
+			return false
+		}
+
+		parsed, err := url.Parse(origin)
+		if err != nil {
+			return false
+		}
+
+		if isLoopbackHost(parsed.Hostname()) {
+			return true
+		}
+
+		if len(allowed) == 0 {
+			return true
+		}
+
+		_, ok := allowed[origin]
+		return ok
+	}
+}
+
+func isLoopbackHost(host string) bool {
+	switch host {
+	case "localhost", "127.0.0.1", "::1":
+		return true
+	default:
+		return false
 	}
 }

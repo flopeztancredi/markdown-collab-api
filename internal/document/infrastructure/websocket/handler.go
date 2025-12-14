@@ -19,16 +19,14 @@ type Handler struct {
 	upgrader gorillaws.Upgrader
 }
 
-func NewHandler(hub *Hub, service *application.Service) *Handler {
+func NewHandler(hub *Hub, service *application.Service, originChecker func(r *http.Request) bool) *Handler {
 	return &Handler{
 		hub:     hub,
 		service: service,
 		upgrader: gorillaws.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
-			CheckOrigin: func(r *http.Request) bool {
-				return true
-			},
+			CheckOrigin:     originChecker,
 		},
 	}
 }
