@@ -1,12 +1,14 @@
 package http
 
 import (
+	"encoding/base64"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
 	"github.com/flopeztancredi/markdown-collab-api/internal/document/application"
+	"github.com/flopeztancredi/markdown-collab-api/internal/document/domain"
 )
 
 type Handler struct {
@@ -24,6 +26,7 @@ type CreateRequest struct {
 type DocumentResponse struct {
 	ID        string `json:"id"`
 	Title     string `json:"title"`
+	Content   string `json:"content"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
@@ -46,12 +49,7 @@ func (h *Handler) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, DocumentResponse{
-		ID:        doc.ID.String(),
-		Title:     doc.Title,
-		CreatedAt: doc.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
-		UpdatedAt: doc.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
-	})
+	c.JSON(http.StatusCreated, toResponse(doc))
 }
 
 func (h *Handler) GetByID(c *gin.Context) {
@@ -68,10 +66,15 @@ func (h *Handler) GetByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, DocumentResponse{
+	c.JSON(http.StatusOK, toResponse(doc))
+}
+
+func toResponse(doc *domain.Document) DocumentResponse {
+	return DocumentResponse{
 		ID:        doc.ID.String(),
 		Title:     doc.Title,
+		Content:   base64.StdEncoding.EncodeToString(doc.Content),
 		CreatedAt: doc.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 		UpdatedAt: doc.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
-	})
+	}
 }
