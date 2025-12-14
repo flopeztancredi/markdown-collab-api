@@ -27,3 +27,7 @@ func (s *Service) Create(ctx context.Context, title string) (*domain.Document, e
 func (s *Service) GetByID(ctx context.Context, id uuid.UUID) (*domain.Document, error) {
 	return s.repo.GetByID(ctx, id)
 }
+
+func (s *Service) UpdateContent(ctx context.Context, id uuid.UUID, content []byte) error {
+	return s.repo.UpdateContent(ctx, id, content)
+}

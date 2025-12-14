@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -40,4 +41,14 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*domain.Documen
 		return nil, err
 	}
 	return &doc, nil
+}
+
+func (r *Repository) UpdateContent(ctx context.Context, id uuid.UUID, content []byte) error {
+	query := `
+		UPDATE documents
+		SET content = $2, updated_at = $3
+		WHERE id = $1
+	`
+	_, err := r.db.Exec(ctx, query, id, content, time.Now().UTC())
+	return err
 }
