@@ -1,7 +1,10 @@
 package config
 
-import "os"
-import "strings"
+import (
+	"os"
+	"strings"
+	"time"
+)
 
 type Config struct {
 	AppName        string
@@ -9,6 +12,8 @@ type Config struct {
 	GinMode        string
 	DatabaseURL    string
 	AllowedOrigins []string
+	RequestTimeout time.Duration
+	DBTimeout      time.Duration
 }
 
 func Load() *Config {
@@ -18,6 +23,8 @@ func Load() *Config {
 		GinMode:        getEnv("GIN_MODE", "debug"),
 		DatabaseURL:    getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/markdown?sslmode=disable"),
 		AllowedOrigins: splitAndTrim(getEnv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173")),
+		RequestTimeout: getEnvDuration("REQUEST_TIMEOUT", "15s"),
+		DBTimeout:      getEnvDuration("DB_TIMEOUT", "5s"),
 	}
 }
 
@@ -38,4 +45,13 @@ func splitAndTrim(value string) []string {
 		}
 	}
 	return out
+}
+
+func getEnvDuration(key, defaultValue string) time.Duration {
+	raw := getEnv(key, defaultValue)
+	d, err := time.ParseDuration(raw)
+	if err != nil {
+		d, _ = time.ParseDuration(defaultValue)
+	}
+	return d
 }

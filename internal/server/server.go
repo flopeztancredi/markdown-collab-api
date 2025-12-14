@@ -1,8 +1,10 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,9 +20,10 @@ import (
 func New(cfg *config.Config, db *pgxpool.Pool) *http.Server {
 	gin.SetMode(cfg.GinMode)
 	router := gin.Default()
+	router.Use(requestTimeoutMiddleware(cfg.RequestTimeout))
 
 	documentRepo := documentPostgres.NewRepository(db)
-	documentService := application.NewService(documentRepo)
+	documentService := application.NewService(documentRepo, cfg.DBTimeout)
 	documentHub := documentWS.NewHub()
 	go documentHub.Run()
 
@@ -70,5 +73,21 @@ func isLoopbackHost(host string) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func requestTimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
+	if timeout <= 0 {
+		return func(c *gin.Context) {
+			c.Next()
+		}
+	}
+
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
+		defer cancel()
+
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
 	}
 }
