@@ -34,7 +34,7 @@ type DocumentResponse struct {
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		writeProblem(c, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -45,7 +45,7 @@ func (h *Handler) Create(c *gin.Context) {
 
 	doc, err := h.service.Create(c.Request.Context(), title)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create document"})
+		writeProblem(c, http.StatusInternalServerError, "failed to create document")
 		return
 	}
 
@@ -56,13 +56,13 @@ func (h *Handler) GetByID(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := uuid.Parse(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid document id"})
+		writeProblem(c, http.StatusBadRequest, "invalid document id")
 		return
 	}
 
 	doc, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "document not found"})
+		writeProblem(c, http.StatusNotFound, "document not found")
 		return
 	}
 
