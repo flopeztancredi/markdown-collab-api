@@ -20,6 +20,8 @@ import (
 func New(cfg *config.Config, db *pgxpool.Pool) *http.Server {
 	gin.SetMode(cfg.GinMode)
 	router := gin.Default()
+	originChecker := allowedOriginChecker(cfg.AllowedOrigins)
+	router.Use(corsMiddleware(originChecker))
 	router.Use(requestTimeoutMiddleware(cfg.RequestTimeout))
 
 	documentRepo := documentPostgres.NewRepository(db)
@@ -29,7 +31,7 @@ func New(cfg *config.Config, db *pgxpool.Pool) *http.Server {
 
 	healthHTTP.RegisterRoutes(router)
 	documentHTTP.RegisterRoutes(router, documentService)
-	documentWS.RegisterRoutes(router, documentHub, documentService, allowedOriginChecker(cfg.AllowedOrigins))
+	documentWS.RegisterRoutes(router, documentHub, documentService, originChecker)
 
 	return &http.Server{
 		Addr:    ":" + cfg.AppPort,
@@ -73,6 +75,27 @@ func isLoopbackHost(host string) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func corsMiddleware(checkOrigin func(r *http.Request) bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		origin := c.GetHeader("Origin")
+		if origin != "" && checkOrigin(c.Request) {
+			c.Header("Access-Control-Allow-Origin", origin)
+			c.Header("Vary", "Origin")
+			c.Header("Access-Control-Allow-Credentials", "true")
+		}
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
+
+		if c.Request.Method == http.MethodOptions {
+			c.Status(http.StatusNoContent)
+			c.Abort()
+			return
+		}
+
+		c.Next()
 	}
 }
 
